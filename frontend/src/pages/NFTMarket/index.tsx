@@ -5,43 +5,29 @@
  * @dev: 1. NFT上传 转移 领取
  * 样式处理
  */
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  useCallback,
-} from "react";
+import CustomIcon from '@/components/CustomIcon';
+import { UserOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
 import {
-  Button,
-  Row,
-  Col,
   Avatar,
-  Dropdown,
-  Modal,
-  List,
+  Button,
   Card,
+  Col,
+  Dropdown,
+  List,
+  Row,
+  Space,
   Tooltip,
-  message,
-} from "antd";
-import type { MenuProps } from "antd";
-import {
-  UserOutlined,
-  createFromIconfontCN,
-  TransactionOutlined,
-  RocketOutlined,
-} from "@ant-design/icons";
-import CustomIcon from "@/components/CustomIcon";
+} from 'antd';
+import React, { useEffect, useState } from 'react';
 //import classnames from 'classnames';
-import styles from "./index.less";
+import styles from './index.less';
 //import moment from 'moment';
-import UploadModal from "./uploadModal";
-import smileImg from "@/assets/images/smile.jpg";
-import { ethers } from "ethers";
-import {useModel} from '@umijs/max'
+import smileImg from '@/assets/images/smile.jpg';
+import { useModel } from '@umijs/max';
+import UploadModal from './uploadModal';
 
-type MenuItem = Required<MenuProps>["items"][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 type ntfInfo = {
   name: string;
@@ -60,43 +46,50 @@ const ComName: React.FC = (props: any, ref: any) => {
     nftInfo: {},
   });
   const [nftList, setNftList] = useState<ntfInfo[]>([
-    { name: "mao", age: 16, img: smileImg },
+    { name: 'mao', age: 16, img: smileImg },
   ]);
-  const { signer, login, logout } = useModel("walletSigner"); // 不知道为什么用不成功
-  
+  const { signer, login, logout } = useModel('walletSigner'); // 不知道为什么用不成功
+
   // useImperativeHandle(ref, () => ({
   // }));
   //const {} = props
 
   const menuList: MenuItem[] = [
     {
-      key: "1",
-      label: "上传NFT",
-      onClick: (e) => handleMenuClick("1"),
+      key: '1',
+      label: '上传NFT',
+      onClick: (e) => handleMenuClick('1'),
     },
     {
-      key: "2",
-      label: "转移NFT",
-      onClick: (e) => handleMenuClick("2"),
+      key: '2',
+      label: '转移NFT',
+      onClick: (e) => handleMenuClick('2'),
     },
     {
-      key: "3",
-      label: "我的个人资料",
-      onClick: (e) => handleMenuClick("3"),
+      key: '3',
+      label: '我的个人资料',
+      onClick: (e) => handleMenuClick('3'),
     },
   ]; // 数据
 
   const handleMenuClick = async (key: string) => {
-    if (key === "1") {
+    if (key === '1') {
       setNftUploadInfo({
         visible: true,
         nftInfo: {},
       });
-    } else if (key === "2") {
+    } else if (key === '2') {
       // TODO 调用合约
     } else {
-     
     }
+  };
+
+  const handleAddressName = (name: string): string => {
+    // 处理名字 前5位 后4位
+    const startStr = name.substring(0, 6);
+    const endStr = name.substring(name.length - 4);
+
+    return startStr + '...' + endStr;
   };
 
   useEffect(() => {}, []);
@@ -110,19 +103,33 @@ const ComName: React.FC = (props: any, ref: any) => {
               <div className={styles.left_fun_box}></div>
             </Col>
             <Col span={18}>
-              <h1 style={{ textAlign: "center" }}>NTF市场</h1>
+              <h1 className="text-xl text-center font-bold">NTF市场</h1>
             </Col>
             <Col span={3}>
               <div className={styles.right_fun_box}>
-                {
-                  signer?.address ? ( <Dropdown menu={{ items: menuList }}>
+                {signer?.address ? (
+                  <Dropdown menu={{ items: menuList }}>
                     <div className={styles.userbox}>
-                    <Avatar size={32} shape="square" icon={<UserOutlined />} />
-                    <span >{signer.address}</span>
+                      <Space>
+                        <Avatar
+                          size={32}
+                          shape="square"
+                          icon={<UserOutlined />}
+                        />
+                        <span>{handleAddressName(signer.address)}</span>
+                      </Space>
                     </div>
-                    
-                  </Dropdown>) : (<Button type="primary" onClick={() => { login();}}>登陆</Button>)
-                }
+                  </Dropdown>
+                ) : (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      login();
+                    }}
+                  >
+                    登陆
+                  </Button>
+                )}
               </div>
             </Col>
           </Row>
@@ -143,7 +150,7 @@ const ComName: React.FC = (props: any, ref: any) => {
                         type="transfer"
                         key="transfer"
                         onClick={() => {}}
-                        style={{ fontSize: 14 }}
+                        style={{ width: 25 }}
                       />
                     </Tooltip>,
                     <Tooltip title="领养">
@@ -153,7 +160,7 @@ const ComName: React.FC = (props: any, ref: any) => {
                         onClick={() => {
                           //TODO web3 调用合约
                         }}
-                        style={{ fontSize: 14 }}
+                        style={{ width: 25 }}
                       />
                     </Tooltip>,
                   ]}
