@@ -1,9 +1,15 @@
 # backend
 python实现本地区块链
+* 暂时用Ganache作为测试链
 
 
 # frontend
 umi4 + antd5 + ethers.js 实现前端
+---
+
+```
+node v20.18.1
+```
 
 # foundry-smartContract2
 所有智能合约
