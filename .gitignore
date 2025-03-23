@@ -1,0 +1,36 @@
+
+# backend
+backend/.pytest_cache
+backend/__pycache__
+
+# foundry-smartContract
+# Compiler files
+foundry-smartContract/cache/
+foundry-smartContract/out/
+
+# Ignores development broadcast logs
+!foundry-smartContract/broadcast
+foundry-smartContract/broadcast/*/31337/
+foundry-smartContract/broadcast/**/dry-run/
+
+# Docs
+foundry-smartContract/docs/
+
+# Dotenv file
+foundry-smartContract/.env
+
+
+# front-end
+frontend/node_modules
+frontend/.env.local
+frontend/.umirc.local.ts
+frontend/config/config.local.ts
+frontend/src/.umi
+frontend/src/.umi-production
+frontend/src/.umi-test
+frontend/.umi
+frontend/.umi-production
+frontend/.umi-test
+frontend/dist
+frontend/.mfsu
+frontend/.swc
