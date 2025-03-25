@@ -96,6 +96,7 @@ const ComName: React.FC = (props: any, ref: any) => {
 
   return (
     <>
+
       <div className={styles.box}>
         <div className={styles.header}>
           <Row>
@@ -187,3 +188,72 @@ export default ComName;
 // export default connect(({ user }) => ({
 // ...user
 // }))(ComName);
+
+
+// TODO
+
+// https://github.com/ipfs/helia
+// https://ipfs.github.io/helia/
+
+// 对接本地IPFS 获取 CID ， 因为 FileBase 获取不了bucket的CID所以无法完成
+// https://www.npmjs.com/package/@helia/dag-cbor
+// import { createHeliaHTTP } from 'https://esm.sh/@helia/http?bundle-deps'
+// import { dagCbor } from 'https://esm.sh/@helia/dag-cbor?bundle-deps'
+
+// const output = document.getElementById('output')
+// const input = document.getElementById('user-input')
+// const button = document.getElementById('get-cid')
+// const helia = await createHeliaHTTP()
+// const dcbor = dagCbor(helia)
+//     globalThis.helia = helia
+// button.addEventListener('click', handleGetCid)
+
+// async function handleGetCid(event) {
+//   try {
+//     const object = JSON.parse(input.value)
+    
+//     // Encode the file with dag-cbor
+//     const cid = await dcbor.add(object)
+    
+//     // Display the CID
+//     output.innerHTML = `Object addressed by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
+    
+//   } catch (err) {
+//     console.error(err)
+//     document.getElementById('output').textContent = 
+//       `Error: ${err.message}`
+//   }
+// }
+
+// https://www.npmjs.com/package/@helia/unixfs
+
+// import { createHeliaHTTP } from 'https://esm.sh/@helia/http?bundle-deps'
+// import { unixfs } from 'https://esm.sh/@helia/unixfs?bundle-deps'
+
+// const output = document.getElementById('output')
+// const fileInput = document.getElementById('user-file')
+// const helia = await createHeliaHTTP()
+// const fs = unixfs(helia)
+    
+// fileInput.addEventListener('change', handleFileUpload)
+
+// async function handleFileUpload(event) {
+//   try {
+//     const file = event.target.files[0]
+//     if (!file) return
+    
+//     // Encode the file with UnixFS
+//     const cid = await fs.addFile({
+//       content: file.stream(),
+//       path: file.name
+//     })
+    
+//     // Display the CID
+//     output.innerHTML = `File addressedf by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
+    
+//   } catch (err) {
+//     console.error(err)
+//     document.getElementById('output').textContent = 
+//       `Error: ${err.message}`
+//   }
+// }

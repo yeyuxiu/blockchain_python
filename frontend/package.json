@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
+    "axios": "^1.8.4",
     "classnames": "^2.5.1",
     "ethers": "^6.13.5",
     "husky": "^9",
