@@ -145,14 +145,14 @@ const ComName: React.FC = (props: any, ref: any) => {
                   style={{ width: 300 }}
                   cover={<img alt="example" src={item.img} />}
                   actions={[
-                    <Tooltip title="转移">
-                      <CustomIcon
-                        type="transfer"
-                        key="transfer"
-                        onClick={() => {}}
-                        style={{ width: 25 }}
-                      />
-                    </Tooltip>,
+                    // <Tooltip title="转移">
+                    //   <CustomIcon
+                    //     type="transfer"
+                    //     key="transfer"
+                    //     onClick={() => {}}
+                    //     style={{ width: 25 }}
+                    //   />
+                    // </Tooltip>,
                     <Tooltip title="领养">
                       <CustomIcon
                         type="adopt"
