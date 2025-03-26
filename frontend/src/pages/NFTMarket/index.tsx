@@ -27,6 +27,9 @@ import smileImg from '@/assets/images/smile.jpg';
 import { useModel } from '@umijs/max';
 import UploadModal from './uploadModal';
 
+// import { strings } from '@helia/strings';
+import { createHelia } from 'helia';
+
 type MenuItem = Required<MenuProps>['items'][number];
 
 type ntfInfo = {
@@ -72,6 +75,7 @@ const ComName: React.FC = (props: any, ref: any) => {
     },
   ]; // 数据
 
+  // usermenu click
   const handleMenuClick = async (key: string) => {
     if (key === '1') {
       setNftUploadInfo({
@@ -84,6 +88,7 @@ const ComName: React.FC = (props: any, ref: any) => {
     }
   };
 
+  // 公钥中间部分省略
   const handleAddressName = (name: string): string => {
     // 处理名字 前5位 后4位
     const startStr = name.substring(0, 6);
@@ -94,9 +99,18 @@ const ComName: React.FC = (props: any, ref: any) => {
 
   useEffect(() => {}, []);
 
+  // 测试button
+  const testFun = async () => {
+    // const helia = await createHelia();
+    // const s = strings(helia);
+
+    // const myImmutableAddress = await s.add('hello world');
+
+    // console.log(await s.get(myImmutableAddress));
+  };
+
   return (
     <>
-
       <div className={styles.box}>
         <div className={styles.header}>
           <Row>
@@ -180,6 +194,14 @@ const ComName: React.FC = (props: any, ref: any) => {
           setNftUploadInfo(e);
         }}
       />
+
+      <Button
+        onClick={() => {
+          testFun();
+        }}
+      >
+        点我
+      </Button>
     </>
   );
 };
@@ -188,7 +210,6 @@ export default ComName;
 // export default connect(({ user }) => ({
 // ...user
 // }))(ComName);
-
 
 // TODO
 
@@ -211,16 +232,16 @@ export default ComName;
 // async function handleGetCid(event) {
 //   try {
 //     const object = JSON.parse(input.value)
-    
+
 //     // Encode the file with dag-cbor
 //     const cid = await dcbor.add(object)
-    
+
 //     // Display the CID
 //     output.innerHTML = `Object addressed by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
-    
+
 //   } catch (err) {
 //     console.error(err)
-//     document.getElementById('output').textContent = 
+//     document.getElementById('output').textContent =
 //       `Error: ${err.message}`
 //   }
 // }
@@ -234,26 +255,37 @@ export default ComName;
 // const fileInput = document.getElementById('user-file')
 // const helia = await createHeliaHTTP()
 // const fs = unixfs(helia)
-    
+
 // fileInput.addEventListener('change', handleFileUpload)
 
 // async function handleFileUpload(event) {
 //   try {
 //     const file = event.target.files[0]
 //     if (!file) return
-    
+
 //     // Encode the file with UnixFS
 //     const cid = await fs.addFile({
 //       content: file.stream(),
 //       path: file.name
 //     })
-    
+
 //     // Display the CID
 //     output.innerHTML = `File addressedf by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
-    
+
 //   } catch (err) {
 //     console.error(err)
-//     document.getElementById('output').textContent = 
+//     document.getElementById('output').textContent =
 //       `Error: ${err.message}`
 //   }
 // }
+
+// 通过CID检索数据
+// import { verifiedFetch } from 'https://esm.sh/@helia/verified-fetch?bundle-deps'
+// const output = document.getElementById('output')
+
+// const resp = await verifiedFetch('ipfs://bafkreia2xtwwdys4dxonlzjod5yxdz7tkiut5l2sgrdrh4d52d3qpstrpy')
+// const blob = await resp.blob()
+// const imgEl = document.createElement('img')
+// imgEl.setAttribute('src', URL.createObjectURL(blob))
+// imgEl.setAttribute('width', '50%')
+// output.appendChild(imgEl)
