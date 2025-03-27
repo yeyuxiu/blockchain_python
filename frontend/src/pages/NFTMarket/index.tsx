@@ -27,8 +27,10 @@ import smileImg from '@/assets/images/smile.jpg';
 import { useModel } from '@umijs/max';
 import UploadModal from './uploadModal';
 
-// import { strings } from '@helia/strings';
 import { createHelia } from 'helia';
+import { strings } from '@helia/strings';
+import {dagCbor} from '@helia/dag-cbor'
+import {unixfs} from '@helia/unixfs'
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -101,13 +103,19 @@ const ComName: React.FC = (props: any, ref: any) => {
 
   // 测试button
   const testFun = async () => {
-    // const helia = await createHelia();
-    // const s = strings(helia);
+    // ******************* string
+    const helia = await createHelia();
+    const s = strings(helia);
 
     // const myImmutableAddress = await s.add('hello world');
-
     // console.log(await s.get(myImmutableAddress));
+
+    // ******************* json
+
+
+    // ******************* file
   };
+
 
   return (
     <>
