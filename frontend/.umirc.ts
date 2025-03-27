@@ -1,4 +1,4 @@
-import { defineConfig } from "@umijs/max";
+import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
   antd: {},
@@ -11,25 +11,34 @@ export default defineConfig({
   },
   initialState: {},
   request: {},
-  layout: { title: "@umijs/max" },
+  layout: { title: '@umijs/max' },
   routes: [
     {
-      path: "/",
-      redirect: "/home",
+      path: '/',
+      redirect: '/home',
     },
     {
-      name: "首页",
-      path: "/home",
-      component: "./Home",
+      name: '首页',
+      path: '/home',
+      component: './Home',
     },
     {
-      name: "NFT市场",
-      path: "/NFTMarket",
-      component: "./NFTMarket",
+      name: 'NFT市场',
+      path: '/NFTMarket',
+      component: './NFTMarket',
     },
   ],
-
-  npmClient: "pnpm",
+  npmClient: 'pnpm',
   tailwindcss: {},
   dva: {},
+  proxy: {
+    '/api/v0': {
+      target: 'http://127.0.0.1:5001',
+      secure: false,
+      changeOrigin: true,
+      // pathRewrite: {
+      //   '^/api/v0': '', 
+      // },
+    },
+  },
 });

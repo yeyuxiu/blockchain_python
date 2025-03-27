@@ -27,10 +27,9 @@ import smileImg from '@/assets/images/smile.jpg';
 import { useModel } from '@umijs/max';
 import UploadModal from './uploadModal';
 
-import { createHelia } from 'helia';
-import { strings } from '@helia/strings';
-import {dagCbor} from '@helia/dag-cbor'
-import {unixfs} from '@helia/unixfs'
+import { verifiedFetch } from '@helia/verified-fetch';
+import {createHelia} from 'helia'
+import { dagCbor } from '@helia/dag-cbor';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -46,14 +45,14 @@ interface uploadInfo {
 }
 
 const ComName: React.FC = (props: any, ref: any) => {
-  const [nftUploadInfo, setNftUploadInfo] = useState({
-    visible: false,
-    nftInfo: {},
-  });
+
+  const [nftUploadVisible, setNftUploadVisible] = useState(false);
+  const [cidList, setCidList] = useState<string[]>([]); // 存cid 同时监控 转换为 nft list
   const [nftList, setNftList] = useState<ntfInfo[]>([
     { name: 'mao', age: 16, img: smileImg },
-  ]);
-  const { signer, login, logout } = useModel('walletSigner'); // 不知道为什么用不成功
+  ]); // 所有nft数据
+
+  const { signer, login, logout } = useModel('walletSigner');  // 登陆数据
 
   // useImperativeHandle(ref, () => ({
   // }));
@@ -77,13 +76,38 @@ const ComName: React.FC = (props: any, ref: any) => {
     },
   ]; // 数据
 
+  // 监控cidList变化同时转化数据并改变 nftList
+  useEffect(() => {
+
+  }, [cidList]);
+
+  // cid转换为可见数据 利用 verify 验证
+  const fromCidGetData = (cidList:string[]) => {
+//     const helia = await createHelia()
+
+//     cidList.forEach(async cid => {
+//       const resp = await verifiedFetch(`ipfs://${cid}`)
+//       console.log(resp, 'resp');
+// const d = dagCbor(helia)
+// const obj = await d.get(resp)
+
+// console.log(obj, 'obj'); // json
+
+// // TODO: push json to nftList
+
+
+//     })
+  }
+
+  // 新增nft cid数据
+  const pushNftList = (cid:string) => {
+    setCidList(pre => ([...pre, cid]))
+  }
+
   // usermenu click
   const handleMenuClick = async (key: string) => {
     if (key === '1') {
-      setNftUploadInfo({
-        visible: true,
-        nftInfo: {},
-      });
+      setNftUploadVisible(true);
     } else if (key === '2') {
       // TODO 调用合约
     } else {
@@ -97,23 +121,6 @@ const ComName: React.FC = (props: any, ref: any) => {
     const endStr = name.substring(name.length - 4);
 
     return startStr + '...' + endStr;
-  };
-
-  useEffect(() => {}, []);
-
-  // 测试button
-  const testFun = async () => {
-    // ******************* string
-    const helia = await createHelia();
-    const s = strings(helia);
-
-    // const myImmutableAddress = await s.add('hello world');
-    // console.log(await s.get(myImmutableAddress));
-
-    // ******************* json
-
-
-    // ******************* file
   };
 
 
@@ -197,19 +204,16 @@ const ComName: React.FC = (props: any, ref: any) => {
         </div>
       </div>
       <UploadModal
-        nftUploadInfo={nftUploadInfo}
-        onChange={(e: any) => {
-          setNftUploadInfo(e);
+        visible={nftUploadVisible}
+        setVisible={(e: any) => {
+          setNftUploadVisible(e);
         }}
+        pushNftList={pushNftList}
       />
 
-      <Button
-        onClick={() => {
-          testFun();
-        }}
-      >
-        点我
-      </Button>
+ 
+
+      {/* {cidSource && <img src={cidSource} alt="" />} */}
     </>
   );
 };
@@ -221,74 +225,26 @@ export default ComName;
 
 // TODO
 
+/**
+ *  helia 一个IPFS的库
+ * 
 // https://github.com/ipfs/helia
 // https://ipfs.github.io/helia/
+ */
 
-// 对接本地IPFS 获取 CID ， 因为 FileBase 获取不了bucket的CID所以无法完成
-// https://www.npmjs.com/package/@helia/dag-cbor
-// import { createHeliaHTTP } from 'https://esm.sh/@helia/http?bundle-deps'
-// import { dagCbor } from 'https://esm.sh/@helia/dag-cbor?bundle-deps'
-
-// const output = document.getElementById('output')
-// const input = document.getElementById('user-input')
-// const button = document.getElementById('get-cid')
-// const helia = await createHeliaHTTP()
-// const dcbor = dagCbor(helia)
-//     globalThis.helia = helia
-// button.addEventListener('click', handleGetCid)
-
-// async function handleGetCid(event) {
-//   try {
-//     const object = JSON.parse(input.value)
-
-//     // Encode the file with dag-cbor
-//     const cid = await dcbor.add(object)
-
-//     // Display the CID
-//     output.innerHTML = `Object addressed by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
-
-//   } catch (err) {
-//     console.error(err)
-//     document.getElementById('output').textContent =
-//       `Error: ${err.message}`
-//   }
-// }
-
-// https://www.npmjs.com/package/@helia/unixfs
-
-// import { createHeliaHTTP } from 'https://esm.sh/@helia/http?bundle-deps'
-// import { unixfs } from 'https://esm.sh/@helia/unixfs?bundle-deps'
-
-// const output = document.getElementById('output')
-// const fileInput = document.getElementById('user-file')
-// const helia = await createHeliaHTTP()
-// const fs = unixfs(helia)
-
-// fileInput.addEventListener('change', handleFileUpload)
-
-// async function handleFileUpload(event) {
-//   try {
-//     const file = event.target.files[0]
-//     if (!file) return
-
-//     // Encode the file with UnixFS
-//     const cid = await fs.addFile({
-//       content: file.stream(),
-//       path: file.name
-//     })
-
-//     // Display the CID
-//     output.innerHTML = `File addressedf by CID: <a href="https://cid.ipfs.tech/#${cid.toString()}">${cid.toString()}</a>`
-
-//   } catch (err) {
-//     console.error(err)
-//     document.getElementById('output').textContent =
-//       `Error: ${err.message}`
-//   }
-// }
+// p2p 节点连接
+// import { createLibp2p } from 'libp2p'
+// import { bootstrap } from '@libp2p/bootstrap'
+// import { identify } from '@libp2p/identify'
+// import { tcp } from '@libp2p/tcp'
+// import { noise } from '@chainsafe/libp2p-noise'
+// import { yamux } from '@chainsafe/libp2p-yamux'
+// import { webRTC } from '@libp2p/webrtc'
+// import { websockets } from '@libp2p/websockets'
+// import { webtransport } from '@libp2p/webtransport'
 
 // 通过CID检索数据
-// import { verifiedFetch } from 'https://esm.sh/@helia/verified-fetch?bundle-deps'
+// import { verifiedFetch } from '@helia/verified-fetchs'
 // const output = document.getElementById('output')
 
 // const resp = await verifiedFetch('ipfs://bafkreia2xtwwdys4dxonlzjod5yxdz7tkiut5l2sgrdrh4d52d3qpstrpy')
