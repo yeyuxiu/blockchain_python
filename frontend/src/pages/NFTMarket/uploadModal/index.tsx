@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react';
 
 import { axiosPost } from '@/utils/axios';
 // import { dagCbor } from '@helia/dag-cbor';
-import { json } from '@helia/json'
+import { json } from '@helia/json';
 // import { createHeliaHTTP } from '@helia/http';
-import { createHelia } from 'helia'
+import { createHelia } from 'helia';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -23,7 +23,7 @@ function ComName(props: any, ref: any) {
   //useImperativeHandle(ref, () => ({
   //lyFormRef
   //}));
-  const { visible, setVisible = false, pushNftList=false } = props;
+  const { visible, setVisible = false, pushNftList = false } = props;
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
 
@@ -40,28 +40,50 @@ function ComName(props: any, ref: any) {
   // 上传函数
   const uploadModalOk = () => {
     form.validateFields().then(async (values) => {
-      const helia = await createHelia()
-
-      const j = json(helia);
-      console.log(values, 'values');
-      const cid = await j.add(values);
-
+      // const helia = await createHelia();
+      
+      const imgUrl = URL.createObjectURL(values.img.file.originFileObj);
+      values.img = imgUrl
       const formData = new FormData();
-      formData.append('file', cid.toString());
+      formData.append('file', JSON.stringify(values));
 
-      const resc = await axiosPost(`/api/v0/add`, formData);
-      console.log(resc, 'resc');
+      const resc = await axiosPost(`/api/v0/add`, formData); // 这个cid是拿来 上传到ipfs 的
 
-      // 再固定
-      // const res = await axiosPost(`/api/v0/pin/add?arg=/ipfs/${cid}`, {
-      //   arg: `/ipfs/${cid}`,
-      // });
-      // console.log(res, 'res');
-      pushNftList(cid)
+      if (resc.Hash) {
+        // 固定到本地
+        const res = await axiosPost(`/api/v0/pin/add?arg=/ipfs/${resc.Hash}`, {
+          arg: `/ipfs/${resc.Hash}`,
+        });
+      }
+
+
+
+      // TODO 执行智能合约 NFTMarket.sol 的 mint 等待交易成功后才 push 期间loading
+      
+
+      pushNftList(resc.Hash);
       setVisible(false);
-      await helia.stop();
+
+      // await helia.stop();
     });
   };
+
+  // 文件转为url
+  function readAsDataURL(file:any) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        resolve(file);
+      };
+      
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      
+      reader.readAsDataURL(file);
+    });
+  }
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -110,7 +132,7 @@ function ComName(props: any, ref: any) {
       okText="确定"
       confirmLoading={false}
       onCancel={() => {
-        setVisible(false)
+        setVisible(false);
       }}
     >
       <Form

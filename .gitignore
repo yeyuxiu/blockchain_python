@@ -5,19 +5,20 @@ backend/__pycache__
 
 # foundry-smartContract
 # Compiler files
-foundry-smartContract/cache/
-foundry-smartContract/out/
+foundry-smartContract2/cache/
+foundry-smartContract2/out/
 
 # Ignores development broadcast logs
-!foundry-smartContract/broadcast
-foundry-smartContract/broadcast/*/31337/
-foundry-smartContract/broadcast/**/dry-run/
+!foundry-smartContract2/broadcast
+foundry-smartContract2/broadcast/*/31337/
+foundry-smartContract2/broadcast/*/11155111/
+foundry-smartContract2/broadcast/**/dry-run/
 
 # Docs
-foundry-smartContract/docs/
+foundry-smartContract2/docs/
 
 # Dotenv file
-foundry-smartContract/.env
+foundry-smartContract2/.env
 
 
 # front-end
@@ -34,3 +35,4 @@ frontend/.umi-test
 frontend/dist
 frontend/.mfsu
 frontend/.swc
+.env
