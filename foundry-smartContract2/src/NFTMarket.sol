@@ -105,7 +105,7 @@ contract NFTMarket is ERC721, ERC721URIStorage, Ownable {
 
     //getter
 
-    function getOwnerTokens(address _owner) public view returns(uint256[] memory){
+    function getMyOwnerTokens(address _owner) public view returns(uint256[] memory){
         return _ownerTokens[_owner];
     }
 }
