@@ -10,4 +10,10 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 	NETWORK_ARGS := --rpc-url $(SEPOLIA_ETH_RPC_URL) --private-key $(PRIVATE_KEY_1) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
 endif
 
-deploy :; forge script script/DeployNFTMarket.s.sol:DeployNFTMarket $(NETWORK_ARGS)
+# NFTMarket
+deployNFTMarket :; forge script script/NFTMarket/DeployNFTMarket.s.sol:DeployNFTMarket $(NETWORK_ARGS)
+testNFTMarket :; forge test --match-path test/unit/NFTMarket/NFTMarket.t.sol
+
+remove :; rm -rf out/ cache/ 
+
+# others

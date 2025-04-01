@@ -7,16 +7,15 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import type { GetProp, UploadProps } from 'antd';
 import { Form, Input, message, Modal, Upload } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 //import moment from 'moment';
 //import classnames from 'classnames';
-
 import { axiosPost } from '@/utils/axios';
+import { useModel } from '@umijs/max';
 // import { dagCbor } from '@helia/dag-cbor';
 // import { createHeliaHTTP } from '@helia/http';
 import { ethers } from 'ethers';
-import NFTMarketABI from './NFTMarket.json';
-
+import NFTMarketABI from '../NFTMarket.json';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -27,10 +26,9 @@ function ComName(props: any, ref: any) {
   const { visible, setVisible = false, pushNftList = false } = props;
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [onUploadOkLoading, setUploadOkLoading] = useState(false);
+  const { signer, login, logout } = useModel('walletSigner'); // 登陆数据
 
-  useEffect(() => {
-
-  }, []);
   // upload modal handle ok
   // TODO 对接区块后台
 
@@ -49,7 +47,7 @@ function ComName(props: any, ref: any) {
       values.img = imgUrl;
       const formData = new FormData();
       formData.append('file', JSON.stringify(values));
-
+      setUploadOkLoading(true);
       const resc = await axiosPost(`/api/v0/add`, formData); // 这个cid是拿来 上传到ipfs 的
 
       if (resc.Hash) {
@@ -59,20 +57,16 @@ function ComName(props: any, ref: any) {
         });
       }
 
-      // TODO 执行智能合约 NFTMarket.sol 的 mint 等待交易成功后才 push 期间loading
-
-      // 合约部署跟调用合约都要链接钱包，作用是支付
-
       // 本地测试
-      const providerLocal = new ethers.JsonRpcProvider(`http://127.0.0.1:8545`);    // window.ethereum
-  
+      const providerLocal = new ethers.JsonRpcProvider(`http://127.0.0.1:8545`); // window.ethereum
+
       //私钥
       const privateKey =
         '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
       const wallet = new ethers.Wallet(privateKey, providerLocal);
       //读写合约
-      const ContractAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9';
-      // const NFTMarketAbi = [{"inputs":[{"internalType":"address","name":"initialOwner","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721IncorrectOwner","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721InsufficientApproval","type":"error"},{"inputs":[{"internalType":"address","name":"approver","type":"address"}],"name":"ERC721InvalidApprover","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"}],"name":"ERC721InvalidOperator","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721InvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"receiver","type":"address"}],"name":"ERC721InvalidReceiver","type":"error"},{"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"ERC721InvalidSender","type":"error"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721NonexistentToken","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_fromTokenId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_toTokenId","type":"uint256"}],"name":"BatchMetadataUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_tokenId","type":"uint256"}],"name":"MetadataUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"getOwnerTokens","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"string","name":"uri","type":"string"}],"name":"safeMint","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}]
+      const ContractAddress = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'; // 替换
+
       const NFTMarketAbi = NFTMarketABI;
 
       const _Contract = new ethers.Contract(
@@ -82,13 +76,24 @@ function ComName(props: any, ref: any) {
       );
 
       const safeMintResult = await _Contract.safeMint(
-        wallet.address,
-        'https://vast-harlequin-magpie.myfilebase.com/ipfs/QmfW2Ht7aBjjZF1A89XjxfH1NNcSEqT3nkA7B1mce9Nb5u',
+        await signer.getAddress(),
+        `http://127.0.0.1:8080/ipfs/${resc.Hash}`,
       );
-      const accountToken = await _Contract.getMyOwnerTokens(wallet.address);
+      // console.log('address: ', await signer.getAddress());
+      const getMyOwnerTokens = await _Contract.getMyOwnerTokens(
+        // await signer.getAddress()
+        '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+      );
+      console.log('getMyOwnerTokens', getMyOwnerTokens);
+      setUploadOkLoading(false);
+      if (safeMintResult) {
+        message.success('上传成功');
+        console.log('ipfs: ', `http://127.0.0.1:8080/ipfs/${resc.Hash}`);
+        console.log(safeMintResult, 'safeMintResult');
+        pushNftList(resc.Hash);
+        setVisible(false);
+      }
 
-      pushNftList(resc.Hash);
-      setVisible(false);
       // await helia.stop();
     });
   };
@@ -155,7 +160,7 @@ function ComName(props: any, ref: any) {
       onOk={uploadModalOk}
       cancelText="取消"
       okText="确定"
-      confirmLoading={false}
+      confirmLoading={onUploadOkLoading}
       onCancel={() => {
         setVisible(false);
       }}

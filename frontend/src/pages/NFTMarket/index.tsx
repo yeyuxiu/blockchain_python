@@ -15,10 +15,14 @@ import {
   Card,
   Col,
   Dropdown,
+  Form,
+  Input,
   List,
+  Modal,
   Row,
   Space,
   Tooltip,
+  message,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 //import classnames from 'classnames';
@@ -27,8 +31,10 @@ import styles from './index.less';
 import { axiosGet } from '@/utils/axios';
 import { useModel } from '@umijs/max';
 import 'dotenv/config';
+import { ethers } from 'ethers';
+import NFTMarketABI from './NFTMarket.json';
 import UploadModal from './uploadModal';
-import {ethers} from 'ethers'
+
 // import {createHelia} from 'helia'
 // import { dagCbor } from '@helia/dag-cbor';
 // import { json } from '@helia/json';
@@ -47,10 +53,20 @@ interface uploadInfo {
   nftInfo: ntfInfo;
 }
 
-const ComName: React.FC = (props: any, ref: any) => {
-  const [nftUploadVisible, setNftUploadVisible] = useState(false);
+type FieldType = {
+  address: string;
+};
+
+const NFTMarket: React.FC = (props: any, ref: any) => {
+  const [nftUploadVisible, setNftUploadVisible] = useState(false); // 上传
+  const [transferVisibleInfo, setTransferVisibleInfo] = useState({
+    visible: false,
+    index: ''
+  }); // 转移
+  const [transferLoading, setTransferLoading] = useState(false);
   const [cidList, setCidList] = useState<string[]>([]); // 存cid 同时监控 转换为 nft list
   const [nftList, setNftList] = useState<ntfInfo[]>([]); // 所有nft数据
+  const [form] = Form.useForm();
 
   const { signer, login, logout } = useModel('walletSigner'); // 登陆数据
 
@@ -66,20 +82,15 @@ const ComName: React.FC = (props: any, ref: any) => {
     },
     {
       key: '2',
-      label: '转移NFT',
-      onClick: (e) => handleMenuClick('2'),
-    },
-    {
-      key: '3',
       label: '我的个人资料',
-      onClick: (e) => handleMenuClick('3'),
+      onClick: (e) => handleMenuClick('2'),
     },
   ]; // 数据
 
-  useEffect(() => {
-    console.log(process.env, 'process.env');
-  }, [])
-  
+  // useEffect(() => {
+  //   console.log(process.env, 'process.env');
+  // }, []);
+
   // 监控cidList变化同时转化数据并改变 nftList
   useEffect(() => {
     fromCidGetData(cidList);
@@ -110,8 +121,6 @@ const ComName: React.FC = (props: any, ref: any) => {
     if (key === '1') {
       setNftUploadVisible(true);
     } else if (key === '2') {
-      // TODO 调用合约
-    } else {
     }
   };
 
@@ -123,7 +132,44 @@ const ComName: React.FC = (props: any, ref: any) => {
 
     return startStr + '...' + endStr;
   };
-  console.log(signer, 'signer');
+
+  // 转移
+  const transferOk = () => {
+    form.validateFields().then(async (values) => {
+      // 本地测试
+      const providerLocal = new ethers.JsonRpcProvider(`http://127.0.0.1:8545`); // window.ethereum
+
+      //读写合约
+      const ContractAddress = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'; // 替换
+      const NFTMarketAbi = NFTMarketABI;
+      setTransferLoading(true);
+
+      const privateKey =
+        '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
+      const wallet = new ethers.Wallet(privateKey, providerLocal);
+
+      const _Contract = new ethers.Contract(
+        ContractAddress,
+        NFTMarketAbi.abi,
+        wallet,
+      );
+
+      const transferFromResult = await _Contract.transferFrom(
+        await signer.getAddress(),
+        values.address,
+        transferVisibleInfo.index,
+      );
+      setTransferLoading(false);
+      if (transferFromResult) {
+        message.success('转移成功');
+        console.log(transferFromResult, 'transferFromResult');
+        setTransferVisibleInfo({
+          visible: false,
+          index: '',
+        });
+      }
+    });
+  };
   return (
     <>
       <div className={styles.box}>
@@ -169,7 +215,7 @@ const ComName: React.FC = (props: any, ref: any) => {
           <List
             grid={{ gutter: 16, column: 4 }}
             dataSource={nftList}
-            renderItem={(item) => (
+            renderItem={(item, index) => (
               <List.Item>
                 <Card
                   style={{ width: 300 }}
@@ -185,7 +231,9 @@ const ComName: React.FC = (props: any, ref: any) => {
                       <CustomIcon
                         type="transfer"
                         key="transfer"
-                        onClick={() => {}}
+                        onClick={() => {
+                          setTransferVisibleInfo({visible:true, index:`${index}`});
+                        }}
                         style={{ width: 25 }}
                       />
                     </Tooltip>,
@@ -215,6 +263,7 @@ const ComName: React.FC = (props: any, ref: any) => {
           />
         </div>
       </div>
+      {/* 上传 */}
       <UploadModal
         visible={nftUploadVisible}
         setVisible={(e: any) => {
@@ -223,43 +272,40 @@ const ComName: React.FC = (props: any, ref: any) => {
         pushNftList={pushNftList}
       />
 
-      {/* {cidSource && <img src={cidSource} alt="" />} */}
+      {/* 转移 */}
+      <Modal
+        title="转移NFT"
+        open={transferVisibleInfo.visible}
+        confirmLoading={transferLoading}
+        onOk={transferOk}
+        onCancel={() => {
+          setTransferVisibleInfo({
+            visible: false,
+            index: '',
+          })
+        }}
+      >
+        <Form
+          form={form}
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+          style={{ maxWidth: 600 }}
+          autoComplete="off"
+        >
+          <Form.Item<FieldType>
+            label="转移的地址"
+            name="address"
+            rules={[{ required: true, message: '请输入地址' }]}
+          >
+            <Input placeholder="请输入地址" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 };
-// forwardRef(ComName);
-export default ComName;
+// forwardRef(NFTMarket);
+export default NFTMarket;
 // export default connect(({ user }) => ({
 // ...user
-// }))(ComName);
-
-// TODO
-
-/**
- *  helia 一个IPFS的库
- * 
-// https://github.com/ipfs/helia
-// https://ipfs.github.io/helia/
- */
-
-// p2p 节点连接
-// import { createLibp2p } from 'libp2p'
-// import { bootstrap } from '@libp2p/bootstrap'
-// import { identify } from '@libp2p/identify'
-// import { tcp } from '@libp2p/tcp'
-// import { noise } from '@chainsafe/libp2p-noise'
-// import { yamux } from '@chainsafe/libp2p-yamux'
-// import { webRTC } from '@libp2p/webrtc'
-// import { websockets } from '@libp2p/websockets'
-// import { webtransport } from '@libp2p/webtransport'
-
-// 通过CID检索数据
-// import { verifiedFetch } from '@helia/verified-fetchs'
-// const output = document.getElementById('output')
-
-// const resp = await verifiedFetch('ipfs://bafkreia2xtwwdys4dxonlzjod5yxdz7tkiut5l2sgrdrh4d52d3qpstrpy')
-// const blob = await resp.blob()
-// const imgEl = document.createElement('img')
-// imgEl.setAttribute('src', URL.createObjectURL(blob))
-// imgEl.setAttribute('width', '50%')
-// output.appendChild(imgEl)
+// }))(NFTMarket);

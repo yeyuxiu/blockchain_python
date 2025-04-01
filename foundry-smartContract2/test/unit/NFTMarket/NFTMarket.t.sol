@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
-import {NFTMarket} from "@src/NFTMarket.sol";
+import {NFTMarket} from "@src/NFTMarket/NFTMarket.sol";
 // import {DeployNFTMarket} from "@script/DeployNFTMarket.s.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
