@@ -68,7 +68,7 @@ const NFTMarket: React.FC = (props: any, ref: any) => {
   const [nftList, setNftList] = useState<ntfInfo[]>([]); // 所有nft数据
   const [form] = Form.useForm();
 
-  const { signer, login, logout } = useModel('walletSigner'); // 登陆数据
+  const { signer,provider, login, logout } = useModel('walletSigner'); // 登陆数据
 
   // useImperativeHandle(ref, () => ({
   // }));

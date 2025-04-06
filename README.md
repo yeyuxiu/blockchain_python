@@ -146,11 +146,17 @@ const oriData = await verifiedFetch('ipfs://cid....') # json{}
 
 ---
 
-### 2. 质押
+### 2. 老虎机（De-Game？）
+TODO: 
+1. 使用 chainlink mock VRF 获取3位随机数
+2. 如果3个随机数不一致，则将用户的钱存入老虎机合同
+3. 如果一致，则将固定奖励给用户
+4. 用户每次只能固定给一定的费用，一部分支付VRF，一部分给奖池用作继续运行
+5. VRF + Transfer
 
 --- 
 
-### 3. 老虎机
+### 3. 老虎机+NFT（盲盒）
 
 ---
 

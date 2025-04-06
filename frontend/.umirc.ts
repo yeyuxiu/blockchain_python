@@ -27,6 +27,11 @@ export default defineConfig({
       path: '/NFTMarket',
       component: './NFTMarket',
     },
+    {
+      name: '老虎机',
+      path: '/slotMachine',
+      component: './SlotMachine',
+    },
   ],
   npmClient: 'pnpm',
   tailwindcss: {},
