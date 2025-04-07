@@ -21,7 +21,7 @@ contract NFTMarketTest is Test {
     }
 
     // 非Owner 不能mint
-    function testUserCanNotMint() public {
+    function testNFTMarketUserCanNotMint() public {
         vm.prank(USER1);
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -32,7 +32,7 @@ contract NFTMarketTest is Test {
         nftMarket.safeMint(USER1, PUG);
     }
 
-    function testCanMint() public {
+    function testNFTMarketCanMint() public {
         vm.startPrank(OWNER);
         uint256 tokenId = nftMarket.safeMint(USER1, PUG);
         uint256 expectNextTokenId = 0;
@@ -46,7 +46,7 @@ contract NFTMarketTest is Test {
         vm.stopPrank();
     }
 
-    function testTransfer() public{
+    function testNFTMarketTransfer() public{
         vm.prank(OWNER);
         uint256 tokenId = nftMarket.safeMint(USER1, PUG);
         vm.prank(USER1);
@@ -62,7 +62,7 @@ contract NFTMarketTest is Test {
 
     }
 
-    function testSupportsInterface () public {
+    function testNFTMarketSupportsInterface () public {
         bool supportsInterface = nftMarket.supportsInterface(0x80ac58cd);
         assert(supportsInterface == true);
     }
