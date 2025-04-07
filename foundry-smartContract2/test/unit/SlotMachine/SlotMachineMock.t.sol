@@ -21,10 +21,15 @@ contract SlotMachineMock is Test {
         deployMock = new DeployMock();
         (vrfCoordinator, randomNumberConsumer) = deployMock.deployBase();
         uint256 balance = vrfCoordinator.s_totalBalance();
+        vm.deal(address(vrfCoordinator), 100 ether);
+        vm.deal(address(randomNumberConsumer), 100 ether);
+        vm.deal(owner, 100 ether);
+        vm.deal(user, 100 ether);
         console.log(balance, 'balance');
     }
 
     function testWord() public {
+        // out of gas
         uint256[] memory words = deployMock.getRandom();
         console.log("words:", words[0]);
     }
